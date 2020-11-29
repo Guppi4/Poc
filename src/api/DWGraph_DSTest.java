@@ -1,6 +1,5 @@
-package tests;
+package api;
 
-import api.*;
 import org.junit.jupiter.api.*;
 
 
