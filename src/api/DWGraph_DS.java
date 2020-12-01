@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-
+//Жыве́ Белару́сь!
 public class DWGraph_DS implements directed_weighted_graph {
     private HashMap<Integer,node_data> Nodes;
     private HashMap<Integer, HashMap<Integer, edge_data>> Edges = new HashMap<Integer, HashMap<Integer, edge_data>>();
