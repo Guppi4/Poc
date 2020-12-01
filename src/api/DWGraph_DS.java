@@ -68,14 +68,16 @@ public class DWGraph_DS implements directed_weighted_graph {
             System.err.println("can't connect");
             //throw new RuntimeErrorException(null);
         }
-        if (Edges.get(src) != null) {
-            Edges.get(src).put(dest, e);
-
+        if (Edges.get(src) != null ) {
+           if(src!=dest) {
+               Edges.get(src).put(dest, e);
+               edgeSize++;
+           }
             mc++;
         } else {
             this.Edges.put(src, new HashMap<Integer, edge_data>());
             this.Edges.get(src).put(dest, e);
-
+            edgeSize++;
             mc++;
         }
 
@@ -109,7 +111,7 @@ public class DWGraph_DS implements directed_weighted_graph {
             if(Edges.get(node).get(key)!=null)
             {
                 Edges.get(node).remove(key);
-
+                edgeSize--;
             }
         }
 
@@ -131,7 +133,7 @@ public class DWGraph_DS implements directed_weighted_graph {
         }
         NodeData.EdgeData e = (NodeData.EdgeData) this.Edges.get(src).get(dest);
         this.Edges.get(src).remove(dest);
-
+        edgeSize--;
         mc++;
         return e;
     }
@@ -143,12 +145,8 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     @Override
     public int edgeSize() {
-        Set<Integer> edgeKeys = Edges.keySet();
-        for (Integer node : edgeKeys) {
-            edgeSize =+Edges.get(node).size();
-        }
 
-       return edgeSize;
+       return this.edgeSize;
     }
 
     @Override
