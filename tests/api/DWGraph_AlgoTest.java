@@ -107,6 +107,27 @@ class DWGraph_AlgoTest {
 
     @Test
     void save() {
+        directed_weighted_graph g = new DWGraph_DS();
+        node_data node = new NodeData();
+        node_data node1 = new NodeData();
+        node_data node2 = new NodeData();
+        node_data node3 = new NodeData();
+        node_data node4 = new NodeData();
+        g.addNode(node);
+        g.addNode(node1);
+        g.addNode(node2);
+        g.addNode(node3);
+        g.addNode(node4);
+        g.connect(node.getKey(),node1.getKey(),10);
+        g.connect(node1.getKey(),node2.getKey(),7);
+        g.connect(node1.getKey(),node4.getKey(),20);
+        g.connect(node2.getKey(),node3.getKey(),6);
+        g.connect(node3.getKey(),node4.getKey(),5);
+        g.connect(node2.getKey(),node4.getKey(),10);
+        DWGraph_Algo graph_algo = new DWGraph_Algo();
+        graph_algo.init(g);
+        graph_algo.save("test_save.json");
+
     }
 
     @Test

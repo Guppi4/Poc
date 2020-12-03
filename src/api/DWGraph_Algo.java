@@ -1,12 +1,11 @@
 package api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -183,36 +182,40 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean save(String file) {
-        JsonObject graph = new JsonObject();
-        JsonArray nodes=new JsonArray();
-        JsonArray edges=new JsonArray();
+    JsonObject g=new JsonObject();
+    JsonArray Edges =new JsonArray();
+    JsonArray Nodes =new JsonArray();
 
-        for(node_data run : this.graph.getV()){
-            JsonObject node = new JsonObject();
-            node.addProperty("id", run.getKey());
-            String pos = run.getLocation().x()+","+run.getLocation().y()+","+run.getLocation().z();
-            node.addProperty("pos",pos);
-            nodes.add(node);
-            for(edge_data runner : this.graph.getE(run.getKey())){
-                JsonObject edge = new JsonObject();
-                edge.addProperty("src",runner.getSrc());
-                edge.addProperty("w",runner.getWeight());
-                edge.addProperty("dest",runner.getDest());
-                edges.add(edge);
-            }
+    for(node_data n: graph.getV()){
+        JsonObject node=new JsonObject();
+        String pos1=n.getLocation().x()+","+n.getLocation().y()+","+n.getLocation().z();
+        node.addProperty("pos",pos1);
+        node.addProperty("id",n.getKey());
+        Nodes.add(node);
+        for(edge_data e:graph.getE(n.getKey())){
+            JsonObject edge=new JsonObject();
+            edge.addProperty("src",e.getSrc());
+            edge.addProperty("w",e.getWeight());
+            edge.addProperty("dest",e.getDest());
+            Edges.add(edge);
         }
-        graph.add("Edges",edges);
-        graph.add("Nodes",nodes);
-        try{
-            Gson gson = new Gson();
-            PrintWriter pw = new PrintWriter(new File(file));
-            pw.write(gson.toJson(graph));
-            pw.close();
-        } catch (FileNotFoundException e) {
+
+    }
+    g.add("Edges",Edges);
+    g.add("Nodes",Nodes);
+
+        try {
+            Gson j=new GsonBuilder().setPrettyPrinting().create();
+            FileWriter f=new FileWriter(file);
+            f.write(j.toJson(g));
+            f.close();
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
+
+        return true ;
+
     }
 
 
