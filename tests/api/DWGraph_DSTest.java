@@ -1,13 +1,9 @@
 package api;
 
-import api.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
-
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,10 +95,8 @@ class DWGraph_DSTest {
         g.connect(node.getKey(),node1.getKey(),1);
         g.connect(node.getKey(),node2.getKey(),2);
         g.connect(node.getKey(),node3.getKey(),3);
-
         g.removeNode(node4.getKey());
         g.removeNode(node.getKey());
-        //System.out.println(g.edgeSize());
         assertNull(g.getEdge(node.getKey(),node1.getKey()));
         assertNull(g.getEdge(node1.getKey(),node.getKey()));
         int e = g.edgeSize();

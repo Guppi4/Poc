@@ -1,5 +1,12 @@
 package api;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -176,8 +183,38 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean save(String file) {
-        return false;
+        JsonObject graph = new JsonObject();
+        JsonArray nodes=new JsonArray();
+        JsonArray edges=new JsonArray();
+
+        for(node_data run : this.graph.getV()){
+            JsonObject node = new JsonObject();
+            node.addProperty("id", run.getKey());
+            String pos = run.getLocation().x()+","+run.getLocation().y()+","+run.getLocation().z();
+            node.addProperty("pos",pos);
+            nodes.add(node);
+            for(edge_data runner : this.graph.getE(run.getKey())){
+                JsonObject edge = new JsonObject();
+                edge.addProperty("src",runner.getSrc());
+                edge.addProperty("w",runner.getWeight());
+                edge.addProperty("dest",runner.getDest());
+                edges.add(edge);
+            }
+        }
+        graph.add("Edges",edges);
+        graph.add("Nodes",nodes);
+        try{
+            Gson gson = new Gson();
+            PrintWriter pw = new PrintWriter(new File(file));
+            pw.write(gson.toJson(graph));
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
+
 
     @Override
     public boolean load(String file) {
