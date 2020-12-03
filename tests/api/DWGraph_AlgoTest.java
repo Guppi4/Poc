@@ -152,10 +152,10 @@ class DWGraph_AlgoTest {
         g.connect(node2.getKey(),node4.getKey(),10);
         DWGraph_Algo graph_algo = new DWGraph_Algo();
         graph_algo.init(g);
-        graph_algo.save("test_save.json");
+        graph_algo.save("test_load.json");
 
         graph_algo.init(g2);
-        graph_algo.load("test_save.json");
+        graph_algo.load("test_load.json");
         //assertEquals(g,g2);
     }
 }
