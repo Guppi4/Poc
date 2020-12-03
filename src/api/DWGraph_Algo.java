@@ -1,11 +1,16 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.*;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -221,6 +226,44 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean load(String file) {
-        return false;
+
+        try
+        {
+           // FileReader reader = new FileReader(file);
+            //Gson j=new Gson();
+            Reader reader = Files.newBufferedReader(Paths.get(file));
+
+
+            JSONObject jsonObject = (JSONObject) reade;
+            JSONArray a2=(JSONArray) jsonObject.get("Edges");
+            JSONArray a1=(JSONArray) jsonObject.get("Nodes");
+            for (int i = 0; i <a1.length(); i++) {
+                NodeData n=new NodeData( a1.getJSONObject(i).getInt("id"));
+                String p=a1.getJSONObject(i).getString("pos");
+                ArrayList<Double> po = new ArrayList<Double>();
+                for (String part : p.split(",")){
+                   po.add(Double.parseDouble(part));
+                }
+                n.setLocation(n.bildgeo(po.get(0),po.get(1),po.get(2)));
+
+
+                for (int t = 0; t < a2.length(); t++) {
+                   if(a2.getJSONObject(t).getInt("src")==n.getKey()){
+                       n.createEdge(a2.getJSONObject(t).getInt("src"),a2.getJSONObject(t).getInt("dest"),a2.getJSONObject(t).getInt("w"));
+
+
+                   }
+                }
+                graph.addNode(n);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
-}
+
+
+    }
+
+

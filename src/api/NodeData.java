@@ -13,7 +13,10 @@ public class NodeData implements node_data{
     private int tag;
     private double weight;
     private geo_location geo;
+    public NodeData(int key){
+        this.key = key;
 
+    }
 
     public NodeData(){
         this.key = count;
@@ -40,7 +43,9 @@ public class NodeData implements node_data{
             return null;
         return neighbors.get(dest);
     }
-
+    public void setEdge(int dest,edge_data e) {
+        this.neighbors.put(dest,e);
+    }
     public  Collection<edge_data> getNi() {
         if(this.neighbors == null)
             return null;
@@ -146,6 +151,15 @@ public class NodeData implements node_data{
     public geo_location getLocation() {
         return this.geo;
     }
+
+    public geo_location bildgeo(double x,double y,double z){
+        location loc=new location() ;
+        loc.setX(x);
+        loc.setY(y);
+        loc.setZ(z);
+         return loc;
+    }
+
 
     @Override
     public void setLocation(geo_location p) {
