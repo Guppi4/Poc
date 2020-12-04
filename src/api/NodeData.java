@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class NodeData implements node_data{
-    private HashMap<Integer,edge_data> neighbors;
+    private HashMap<Integer,edge_data> neighbors=new HashMap<Integer, edge_data>();
     private int key ;
     private static int count = 0;
     private String Info;
     private double dist;
     private int tag;
     private double weight;
-    private geo_location geo;
+    private geo_location geo=new location();
     public NodeData(int key){
         this.key = key;
 
@@ -141,10 +141,10 @@ public class NodeData implements node_data{
         if (o == null || getClass() != o.getClass()) return false;
         NodeData nodeData = (NodeData) o;
         return key == nodeData.key &&
-                tag == nodeData.tag &&
+
                 Double.compare(nodeData.weight, weight) == 0 &&
-                Objects.equals(neighbors, nodeData.neighbors) &&
-                Objects.equals(Info, nodeData.Info);
+                Objects.equals(neighbors, nodeData.neighbors) ;
+
     }
 
     @Override

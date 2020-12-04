@@ -1,27 +1,28 @@
 package api;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
+
 import org.json.simple.parser.ParseException;
-
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import org.json.JSONObject;
+import org.json.*;
+import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
     directed_weighted_graph graph;
-//check
-    public DWGraph_Algo(){
+
+    //check
+    public DWGraph_Algo() {
         this.graph = new DWGraph_DS();
     }
+
     @Override
     public void init(directed_weighted_graph g) {
         this.graph = g;
@@ -35,13 +36,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public directed_weighted_graph copy() {
         directed_weighted_graph g = new DWGraph_DS();
-        for(node_data run : graph.getV()){
+        for (node_data run : graph.getV()) {
             node_data var = new NodeData(run);
             g.addNode(var);
         }
-        for(node_data run : graph.getV()){
-            for(edge_data run1 : graph.getE(run.getKey())){
-                g.connect(run1.getSrc(),run1.getDest(),run1.getWeight());
+        for (node_data run : graph.getV()) {
+            for (edge_data run1 : graph.getE(run.getKey())) {
+                g.connect(run1.getSrc(), run1.getDest(), run1.getWeight());
             }
         }
         return g;
@@ -49,58 +50,60 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean isConnected() {
-        if(graph.nodeSize()==0 || graph.nodeSize()==1)
+        if (graph.nodeSize() == 0 || graph.nodeSize() == 1)
             return true;
         boolean flag;
         node_data start = null;
-        for (node_data run : this.graph.getV()){
+        for (node_data run : this.graph.getV()) {
             start = run;
             break;
         }
-        if(start == null)
+        if (start == null)
             return false;
-        flag = bfs(start,this.graph);
-        if(flag == false)
+        flag = bfs(start, this.graph);
+        if (flag == false)
             return false;
 
         nullify();
         directed_weighted_graph g = transpose();
         start = g.getNode(start.getKey());
-        return bfs(start,g);
+        return bfs(start, g);
     }
 
-    public boolean bfs(node_data start,directed_weighted_graph graph){
+    public boolean bfs(node_data start, directed_weighted_graph graph) {
         Queue<node_data> st1 = new ArrayDeque<node_data>();
         start.setInfo("blue");
         int count = 1;
         st1.add(start);
-        while (!st1.isEmpty()){
+        while (!st1.isEmpty()) {
             node_data p = st1.poll();
-            for(edge_data run : graph.getE(p.getKey())){
-                if(graph.getNode(run.getDest()).getInfo() == "white") {
+            for (edge_data run : graph.getE(p.getKey())) {
+                if (graph.getNode(run.getDest()).getInfo() == "white") {
                     graph.getNode(run.getDest()).setInfo("blue");
-                    count ++;
+                    count++;
                     st1.add(graph.getNode(run.getDest()));
                 }
             }
         }
         return graph.nodeSize() == count;
     }
-    public directed_weighted_graph transpose(){
+
+    public directed_weighted_graph transpose() {
         directed_weighted_graph g = new DWGraph_DS();
-        for(node_data run : graph.getV()){
+        for (node_data run : graph.getV()) {
             node_data var = new NodeData(run);
             g.addNode(var);
         }
-        for(node_data run : graph.getV()){
-            for(edge_data run1 : graph.getE(run.getKey())){
-                g.connect(run1.getDest(),run1.getSrc(),run1.getWeight());
+        for (node_data run : graph.getV()) {
+            for (edge_data run1 : graph.getE(run.getKey())) {
+                g.connect(run1.getDest(), run1.getSrc(), run1.getWeight());
             }
         }
         return g;
     }
-    public void nullify(){
-        for(node_data run : graph.getV()){
+
+    public void nullify() {
+        for (node_data run : graph.getV()) {
             run.setTag(Integer.MAX_VALUE);
             run.setInfo("white");
         }
@@ -108,13 +111,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public double shortestPathDist(int src, int dest) {
-        if(src == dest)
+        if (src == dest)
             return 0;
-        if(graph.getV().contains(graph.getNode(src))&&graph.getV().contains(graph.getNode(dest))) {
+        if (graph.getV().contains(graph.getNode(src)) && graph.getV().contains(graph.getNode(dest))) {
             dijkstra(src, dest);
             NodeData var = (NodeData) this.graph.getNode(dest);
             double dist = var.getDist();
-            if(dist == Integer.MAX_VALUE)
+            if (dist == Integer.MAX_VALUE)
                 return -1;
             nullify();
             return dist;
@@ -125,21 +128,21 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public List<node_data> shortestPath(int src, int dest) {
         LinkedList<node_data> path = new LinkedList<node_data>();
-        if(src == dest) {
+        if (src == dest) {
             node_data s = graph.getNode(dest);
             path.addFirst(s);
             return path;
         }
-        if(graph.getV().contains(graph.getNode(src))&&graph.getV().contains(graph.getNode(dest))) {
+        if (graph.getV().contains(graph.getNode(src)) && graph.getV().contains(graph.getNode(dest))) {
             //HashMap with path
             dijkstra(src, dest);
             node_data tempVariable = graph.getNode(dest);
             //check if got to destination
-            if(tempVariable.getTag()==Integer.MAX_VALUE )
+            if (tempVariable.getTag() == Integer.MAX_VALUE)
                 return null;
             path.addFirst(tempVariable);
             int keyOfparent = tempVariable.getTag();
-            while (keyOfparent != src){
+            while (keyOfparent != src) {
                 tempVariable = graph.getNode(keyOfparent);
                 path.addFirst(tempVariable);
                 keyOfparent = tempVariable.getTag();
@@ -151,31 +154,32 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         }
         return null;
     }
-    public void dijkstra(int src, int dest){
+
+    public void dijkstra(int src, int dest) {
         PriorityQueue<NodeData> pq = new PriorityQueue<>(new Comparator<NodeData>() {
             @Override
             public int compare(NodeData o1, NodeData o2) {
-                return  Double.compare(o1.getDist(), o2.getDist());
+                return Double.compare(o1.getDist(), o2.getDist());
             }
         });
         NodeData p = (NodeData) this.graph.getNode(src);
         p.setDist(0);
         pq.add(p);
-        while(!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             NodeData temp = (NodeData) pq.poll();
             // blue the node which was visited
-            if(temp.getInfo() != "blue"){
+            if (temp.getInfo() != "blue") {
                 temp.setInfo("blue");
-                if(temp.getKey() == dest){
+                if (temp.getKey() == dest) {
                     return;
                 }
                 // check all neighbors of visited node
-                for(edge_data run : this.graph.getE(temp.getKey())){
-                    if(graph.getNode(run.getDest()).getInfo() != "blue" ){
-                        edge_data edge = graph.getEdge(run.getSrc(),run.getDest());
+                for (edge_data run : this.graph.getE(temp.getKey())) {
+                    if (graph.getNode(run.getDest()).getInfo() != "blue") {
+                        edge_data edge = graph.getEdge(run.getSrc(), run.getDest());
                         double dist = temp.getDist() + edge.getWeight();
                         NodeData var = (NodeData) graph.getNode(run.getDest());
-                        if(dist < var.getDist()){
+                        if (dist < var.getDist()) {
                             var.setDist(dist);
                             pq.add(var);
                             var.setTag(temp.getKey());
@@ -190,31 +194,31 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     @Override
     public boolean save(String file) {
-    JsonObject g=new JsonObject();
-    JsonArray Edges =new JsonArray();
-    JsonArray Nodes =new JsonArray();
+        JsonObject g = new JsonObject();
+        JsonArray Edges = new JsonArray();
+        JsonArray Nodes = new JsonArray();
 
-    for(node_data n: graph.getV()){
-        JsonObject node=new JsonObject();
-        String pos1=n.getLocation().x()+","+n.getLocation().y()+","+n.getLocation().z();
-        node.addProperty("pos",pos1);
-        node.addProperty("id",n.getKey());
-        Nodes.add(node);
-        for(edge_data e:graph.getE(n.getKey())){
-            JsonObject edge=new JsonObject();
-            edge.addProperty("src",e.getSrc());
-            edge.addProperty("w",e.getWeight());
-            edge.addProperty("dest",e.getDest());
-            Edges.add(edge);
+        for (node_data n : graph.getV()) {
+            JsonObject node = new JsonObject();
+            String pos1 = n.getLocation().x() + "," + n.getLocation().y() + "," + n.getLocation().z();
+            node.addProperty("pos", pos1);
+            node.addProperty("id", n.getKey());
+            Nodes.add(node);
+            for (edge_data e : graph.getE(n.getKey())) {
+                JsonObject edge = new JsonObject();
+                edge.addProperty("src", e.getSrc());
+                edge.addProperty("w", e.getWeight());
+                edge.addProperty("dest", e.getDest());
+                Edges.add(edge);
+            }
+
         }
-
-    }
-    g.add("Edges",Edges);
-    g.add("Nodes",Nodes);
+        g.add("Edges", Edges);
+        g.add("Nodes", Nodes);
 
         try {
-            Gson j=new GsonBuilder().setPrettyPrinting().create();
-            FileWriter f=new FileWriter(file);
+            Gson j = new Gson();
+            FileWriter f = new FileWriter(file);
             f.write(j.toJson(g));
             f.close();
         } catch (IOException e) {
@@ -222,54 +226,63 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             return false;
         }
 
-        return true ;
+        return true;
 
     }
 
 
     @Override
     public boolean load(String file) {
-     Gson k= new Gson();
-        // FileReader reader = new FileReader(file);
 
-
-        JSONParser jsonParser = new JSONParser();
         try {
-            JSONObject obj=(JSONObject) JSONValue.parse(new FileReader(file));
+            Reader reader = null;
+            try {
+                reader = Files.newBufferedReader(Paths.get(file));
+                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
 
-            JSONArray a2=(JSONArray) obj.getJSONArray("Edges");
-            JSONArray a1=(JSONArray) obj.getJSONArray("Nodes");
-            for (int i = 0; i <a1.length(); i++) {
-                NodeData n=new NodeData( a1.getJSONObject(i).getInt("id"));
-                String p=a1.getJSONObject(i).getString("pos");
-                ArrayList<Double> po = new ArrayList<Double>();
-                for (String part : p.split(",")){
-                    po.add(Double.parseDouble(part));
-                }
-                n.setLocation(n.bildgeo(po.get(0),po.get(1),po.get(2)));
+                ;
+                JsonArray a2 = obj.getAsJsonArray("Edges");
+                JsonArray a1 = obj.getAsJsonArray("Nodes");
+                for (int i = 0; i < a1.size(); i++) {
+                    NodeData n = new NodeData(a1.get(i).getAsJsonObject().get("id").getAsInt());
+                    String p = a1.get(i).getAsJsonObject().get("pos").getAsString();
+                    ArrayList<Double> po = new ArrayList<Double>();
+                    for (String part : p.split(",")) {
+                        po.add(Double.parseDouble(part));
+                    }
+                    n.setLocation(n.bildgeo(po.get(0), po.get(1), po.get(2)));
 
-
-                for (int t = 0; t < a2.length(); t++) {
-                    if(a2.getJSONObject(t).getInt("src")==n.getKey()){
-                        n.createEdge(a2.getJSONObject(t).getInt("src"),a2.getJSONObject(t).getInt("dest"),a2.getJSONObject(t).getInt("w"));
-
-
+                    graph.addNode(n);
+                    for (int t = 0; t < a2.size(); t++) {
+                        graph.connect(a2.get(t).getAsJsonObject().get("src").getAsInt(),a2.get(t).getAsJsonObject().get("dest").getAsInt(), a2.get(t).getAsJsonObject().get("w").getAsDouble());
                     }
                 }
-                graph.addNode(n);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-
-
-        } catch (IOException e) {
+        } catch (JsonIOException e) {
+            e.printStackTrace();
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
             e.printStackTrace();
         }
 
-
         return true;
     }
+}
 
 
-    }
+
+
+
+
+
+
+
+
+
 
 

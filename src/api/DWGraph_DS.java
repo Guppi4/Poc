@@ -47,7 +47,8 @@ public class DWGraph_DS implements directed_weighted_graph {
         if(graph.containsKey(src)&&graph.containsKey(dest)){
             node = (NodeData)graph.get(src);
             node.createEdge(src,dest,w);
-            edgeSize ++;
+            //System.out.println(edgeSize);
+            this.edgeSize ++;
             mc ++;
         }
     }
