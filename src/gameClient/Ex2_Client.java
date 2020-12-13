@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Ex2_Client implements Runnable{
+
 	private static MyFrame _win;
 	private static Arena _ar;
 	public static void main(String[] a) {
@@ -34,7 +35,7 @@ public class Ex2_Client implements Runnable{
 		game.startGame();
 		_win.setTitle("Ex2 - OOP: (NONE trivial Solution) "+game.toString());
 		int ind=0;
-		long dt=100;
+		long dt=1000;
 		
 		while(game.isRunning()) {
 			moveAgants(game, gg);

@@ -159,7 +159,12 @@ public class NodeData implements node_data{
         loc.setZ(z);
          return loc;
     }
-
+    public void setLocation(double x, double y, double z) {
+        location loc = (location) this.geo;
+        loc.setX(x);
+        loc.setY(y);
+        loc.setZ(z);
+    }
 
     @Override
     public void setLocation(geo_location p) {
@@ -168,7 +173,7 @@ public class NodeData implements node_data{
         loc.setY(p.y());
         loc.setZ(p.z());
     }
-    private class location implements geo_location{
+    public static class location implements geo_location{
         private double x;
         private double y;
         private double z;
@@ -179,6 +184,16 @@ public class NodeData implements node_data{
             this.z = 0;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            location location = (location) o;
+            return Double.compare(location.x, x) == 0 &&
+                    Double.compare(location.y, y) == 0 &&
+                    Double.compare(location.z, z) == 0;
+        }
+
         public void setX(double x){
             this.x =x;
         }
@@ -187,6 +202,7 @@ public class NodeData implements node_data{
         public double x() {
             return this.x;
         }
+
         public void setY(double y){
             this.y =y;
         }
@@ -195,6 +211,7 @@ public class NodeData implements node_data{
         public double y() {
             return this.y;
         }
+
         public void setZ(double z){
             this.z =z;
         }
@@ -206,7 +223,11 @@ public class NodeData implements node_data{
 
         @Override
         public double distance(geo_location g) {
-            return 0;
+            double dx = this.x - g.x();
+            double dy = this.y - g.y();
+            double dz = this.z - g.z();
+            double t = (dx*dx+dy*dy+dz*dz);
+            return Math.sqrt(t);
         }
     }
 

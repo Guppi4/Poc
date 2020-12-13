@@ -232,44 +232,36 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
 
     @Override
-    public boolean load(String file) {
+    public boolean load(String file) throws  JSONException {
+        Scanner scanner = new Scanner( file);
+        String jsonString = scanner.useDelimiter("\\A").next();
+        scanner.close();
+        directed_weighted_graph g = new DWGraph_DS();
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONObject tempObj = new JSONObject();
+        JSONArray nodes = jsonObject.getJSONArray("Nodes");
+        JSONArray edges = jsonObject.getJSONArray("Edges");
 
-        try {
-            Reader reader = null;
-            try {
-                reader = Files.newBufferedReader(Paths.get(file));
-                JsonObject obj = JsonParser.parseReader(reader).getAsJsonObject();
-
-                ;
-                JsonArray a2 = obj.getAsJsonArray("Edges");
-                JsonArray a1 = obj.getAsJsonArray("Nodes");
-                for (int i = 0; i < a1.size(); i++) {
-                    NodeData n = new NodeData(a1.get(i).getAsJsonObject().get("id").getAsInt());
-                    String p = a1.get(i).getAsJsonObject().get("pos").getAsString();
-                    ArrayList<Double> po = new ArrayList<Double>();
-                    for (String part : p.split(",")) {
-                        po.add(Double.parseDouble(part));
-                    }
-                    n.setLocation(n.bildgeo(po.get(0), po.get(1), po.get(2)));
-
-                    graph.addNode(n);
-                    for (int t = 0; t < a2.size(); t++) {
-                        graph.connect(a2.get(t).getAsJsonObject().get("src").getAsInt(),a2.get(t).getAsJsonObject().get("dest").getAsInt(), a2.get(t).getAsJsonObject().get("w").getAsDouble());
-                    }
-                }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
+        for (int i = 0; i < nodes.length(); i++) {
+            tempObj = nodes.getJSONObject(i);
+            int key = (int) tempObj.get("id");
+            String geo = (String) tempObj.get("pos");
+            NodeData node = new NodeData(key);
+            ArrayList<Double> points = new ArrayList<Double>(3);
+            for(String part : geo.split(",")){
+                points.add(Double.parseDouble(part));
             }
-        } catch (JsonIOException e) {
-            e.printStackTrace();
-        } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+            node.setLocation(points.get(0),points.get(1),points.get(2));
+            g.addNode(node);
         }
-
+        for (int i = 0; i < edges.length(); i++) {
+            tempObj = edges.optJSONObject(i);
+            int src = (int) tempObj.get("src");
+            int dest = (int) tempObj.get("dest");
+            double weight = (double) tempObj.get("w");
+            g.connect(src, dest, weight);
+        }
+        this.graph = g;
         return true;
     }
 }
